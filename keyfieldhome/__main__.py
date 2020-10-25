@@ -31,6 +31,9 @@ def __main__():
     if args.quiet:
         log.setLevel(log.WARN)
 
+    if args.config:
+        os.environ.set('KF_HOMESERVER_CONFIG', args.config)
+
     app.app.run()
 
 if __name__ == '__main__':

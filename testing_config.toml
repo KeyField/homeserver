@@ -18,5 +18,6 @@ reserved_names = [
 ]
 
 [db]
-address = "mongo"
-database_prefix = "keyfield_dev_"
+address = "127.0.0.1"
+port = 27017
+database_name = "keyfield_dev"
