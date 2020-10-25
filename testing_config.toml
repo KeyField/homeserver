@@ -1,0 +1,22 @@
+
+name = "KeyField Test Homeserver"
+
+[server]
+external_addresses = [
+  "http://localhost:8008"
+]
+listen_port = 8008
+username = "system"
+
+[users]
+public_registration = true
+admin_keys = {}
+reserved_names = [
+  "admin",
+  "administrator",
+  "owner",
+]
+
+[db]
+address = "mongo"
+database_prefix = "keyfield_dev_"
