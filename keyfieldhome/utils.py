@@ -36,3 +36,7 @@ def make_msgpack_response(*args, **kwargs):
     r = make_response(*args, **kwargs)
     r.mimetype = "application/msgpack"
     return r
+
+def key_from_urlstr(urlsafestr):
+    # if len()
+    pass

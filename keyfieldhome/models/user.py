@@ -5,6 +5,7 @@ from mongoengine.fields import *
 from .homeserver import Homeserver
 from .user_device import UserDevice
 from .public_key import PublicKey
+from .chat.channel import ChatChannel
 
 
 class UserProfile(Document):
@@ -20,9 +21,12 @@ class UserProfile(Document):
     homeserver = LazyReferenceField(Homeserver, required=True)
     devices = ListField(LazyReferenceField(UserDevice))
     current_mainkey = ReferenceField(PublicKey, required=True)
+    latest_sigtime = DateTimeField()
+    # latest_signed_id_block
 
 
 class HomeserverUser(UserProfile):
     """Represents a user authorized to use this homeserver.
     """
-    pass
+    channels = ListField(LazyReferenceField('ChatChannel', passthrough=True))
+    blocked_users = ListField(LazyReferenceField(UserProfile, passthrough=True))

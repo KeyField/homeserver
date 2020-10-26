@@ -21,3 +21,8 @@ reserved_names = [
 address = "127.0.0.1"
 port = 27017
 database_name = "keyfield_dev"
+
+[federation]
+blocked_peers_keys = []
+blocked_peers_addresses = []
+# auto_update_profiles = true
