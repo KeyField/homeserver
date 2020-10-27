@@ -1,11 +1,11 @@
 
-from .public_key import PublicKey
+from .public_key import PublicKeyPair
 from .homeserver import Homeserver
 from .user_device import UserDevice
 from .user import UserProfile, HomeserverUser
 
 __all__ = [
-    PublicKey,
+    PublicKeyPair,
     Homeserver,
     UserDevice,
     UserProfile,

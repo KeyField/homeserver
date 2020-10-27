@@ -1,7 +1,6 @@
 
-name = "KeyField Test Homeserver"
-
 [server]
+name = "KeyField Test Homeserver"
 external_addresses = [
   "http://localhost:8008"
 ]

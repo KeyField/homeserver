@@ -4,8 +4,8 @@ from mongoengine.fields import *
 
 from .homeserver import Homeserver
 from .user_device import UserDevice
-from .public_key import PublicKey
-from .chat.channel import ChatChannel
+from .public_key import PublicKeyPair
+# from .chat.channel import ChatChannel # circular
 
 
 class UserProfile(Document):
@@ -17,12 +17,15 @@ class UserProfile(Document):
     meta = {
         "allow_inheritance": True,
     }
-    username = StringField(max_length=32, min_length=2)
+    username = StringField(max_length=32, min_length=2, unique=True)
     homeserver = LazyReferenceField(Homeserver, required=True)
     devices = ListField(LazyReferenceField(UserDevice))
-    current_mainkey = ReferenceField(PublicKey, required=True)
-    latest_sigtime = DateTimeField()
+    current_mainkey = EmbeddedDocumentField(PublicKeyPair, required=True, unique=True)
+    # latest_sigtime = DateTimeField()
     # latest_signed_id_block
+
+    # signed (by user) msgpack'd user identity (profile block)
+    signed_identity = BinaryField(required=True)
 
 
 class HomeserverUser(UserProfile):

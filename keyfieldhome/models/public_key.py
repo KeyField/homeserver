@@ -1,24 +1,27 @@
 
-from mongoengine import Document
+from mongoengine import EmbeddedDocument
 from mongoengine.fields import *
 import bson
 from nacl.signing import VerifyKey
 
 
-class PublicKey(Document):
-    """Represents the public part of a signing keypair.
+class PublicKeyPair(EmbeddedDocument):
+    """Represents a PublicKey signed by a VerifyKey.
 
-    The private part can be held by a User, Homeserver, or Device.
+    Note it's not a direct signing, it's signed into a user identity block.
+    The private part can be held by a User or Homeserver.
     """
-    key_bytes = BinaryField(required=True)
+    verifykey_bytes = BinaryField(required=True)
+    publickey_bytes = BinaryField(required=False) # able to be discovered by federation
     created = DateTimeField()
     expires = DateTimeField()
+    # TODO: is successor needed as an EmbeddedDocument ?
+    # successor = LazyReferenceField('PublicKeyPair', passthrough=True)
 
     @property
-    def nacl_verifykey(self):
-        return VerifyKey(self.key_bytes)
+    def verifykey(self):
+        return VerifyKey(self.verifykey_bytes)
 
-    def bson_verified_loads(self, content: bytes):
-        """Returns the decoded bson object if signature is good.
-        """
-        return bson.decode(self.nacl_verifykey.verify(content))
+    @property
+    def publickey(self):
+        return PublicKey(self.publickey_bytes)

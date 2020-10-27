@@ -2,25 +2,28 @@
 from mongoengine import Document
 from mongoengine.fields import *
 
-from .public_key import PublicKey
-from .encryption_key import PublicEncryptionKey
+from .public_key import PublicKeyPair
 
 class Homeserver(Document):
     """Represents a peer or detached peer homeserver.
     """
-    address = StringField(required=True)
-    public_key = LazyReferenceField(PublicKey, passthrough=True, required=True)
+    address = StringField(required=True, unique=True)
+    server_key = EmbeddedDocumentField(PublicKeyPair, required=True)
     # we can discover the encryption key and name on-demand if we don't yet have it
-    name = StringField(required=False)
-    encryption_key = LazyReferenceField(PublicEncryptionKey, passthrough=True, required=False)
+    name = StringField()
+    server_username = StringField()
 
     def pull_federation_identity(self):
-        """Gets the other homeserver's details."""
+        """Updates the other homeserver's details."""
         pass # TODO
 
-    def get_encryption_key(self):
+    @property
+    def publickey(self):
         """If we don't yet have it, discover it.
+
+        If a server encryption key ever changes then manual intervention is required.
+        (Something very bad might have happened)
         """
-        if self.encryption_key is None:
+        if self.server_key.publickey_bytes is None:
             self.pull_federation_identity()
-        return self.encryption_key
+        return self.server_key.publickey

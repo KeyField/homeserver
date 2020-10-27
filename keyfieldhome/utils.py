@@ -1,5 +1,5 @@
 
-from flask import Response, make_response
+from flask import Response, make_response, Request, request
 import nacl
 import base64
 
@@ -24,10 +24,14 @@ def set_keyfield_http_headers(r: Response):
     return r
 
 def sign_response(r: Response):
-    log.info(f"resp data type: {type(r.data)}")
     signed = private_keys.sign_with_server_key(r.data)
     r.headers['KF-Homeserver-Signature'] = base64.urlsafe_b64encode(signed.signature)
     return r
+
+def get_decoded_header(headername: str, req: Request = request):
+    assert headername in req.headers
+    hc = req.headers[headername]
+    return base64.urlsafe_b64decode(hc)
 
 def make_msgpack_response(*args, **kwargs):
     """Sets the correct mime type / headers, does *not* pack for you."""
@@ -37,6 +41,8 @@ def make_msgpack_response(*args, **kwargs):
     r.mimetype = "application/msgpack"
     return r
 
-def key_from_urlstr(urlsafestr):
-    # if len()
-    pass
+def bytes_to_urlstr(data: bytes):
+    return base64.urlsafe_b64encode(data)
+
+def bytes_from_urlstr(urlsafestr: str):
+    return base64.urlsafe_b64decode(urlsafestr)

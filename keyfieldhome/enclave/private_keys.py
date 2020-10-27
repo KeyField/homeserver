@@ -2,12 +2,11 @@
 from mongoengine import Document
 from mongoengine.fields import *
 import nacl
-from nacl.public import PrivateKey, Box
+from nacl.public import PrivateKey, Box, SealedBox
 from nacl.signing import SigningKey, VerifyKey
 
 from .. import log
 from .. import config as cfg
-from ..models.encryption_key import PublicEncryptionKey
 
 class PrivateServerKey(Document):
     """Private signing key of the server.
@@ -27,11 +26,25 @@ def _get_server_privatekey():
     psk = _get_server_signingkey()
     return psk.to_curve25519_private_key()
 
-def get_server_verifykey(encoder=nacl.encoding.RawEncoder):
-    return _get_server_signingkey().verify_key.encode(encoder)
+def get_server_verifykey(encoder=None):
+    if encoder is None:
+        return VerifyKey(_get_server_signingkey().verify_key.encode())
+    else:
+        return _get_server_signingkey().verify_key.encode(encoder)
 
-def get_server_publickey(encoder=nacl.encoding.RawEncoder):
-    return _get_server_privatekey().public_key.encode(encoder)
+def get_server_publickey(encoder=None):
+    if encoder is None:
+        return PublicKey(_get_server_privatekey().public_key.encode())
+    else:
+        return _get_server_privatekey().public_key.encode(encoder)
+
+def get_server_sealedbox():
+    """Box for decrypting."""
+    return SealedBox(_get_server_privatekey())
+
+def decrypt_sealed(content: bytes):
+    sb = get_server_sealedbox()
+    return sb.decrypt(content)
 
 def on_startup():
     # verification / initialization checks

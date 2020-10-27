@@ -17,6 +17,8 @@ This homeserver implementation is written in Python using Flask and MongoDB (Mon
 
 It operates entirely over HTTP methods in order to make it as accessible to clients and users as possible. Using the standard transport allows servers to employ common reverse proxies and existing high-availability systems.
 
+Data transferred over the network is primarily msgpack, encrypted and/or signed with PyNaCl. Every user and server has it's own identity and set of keys.
+
 ## Project Status
 
 Pre-production, nothing here is complete yet, it's mostly scaffolding and hacks until the v1 API is finalized.
