@@ -8,3 +8,7 @@ app.before_first_request(db.connect)
 app.before_first_request(private_keys.on_startup)
 
 app.before_first_request(bootstrap.on_startup)
+
+__version__ = "0.0.1"
+
+application = app

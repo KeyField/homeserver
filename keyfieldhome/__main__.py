@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import os
 
 from . import log, config, app, routes
 
@@ -32,9 +33,9 @@ def __main__():
         log.setLevel(log.WARN)
 
     if args.config:
-        os.environ.set('KF_HOMESERVER_CONFIG', args.config)
+        os.environ['KF_HOMESERVER_CONFIG'] = args.config
 
-    app.app.run()
+    app.run()
 
 if __name__ == '__main__':
     __main__()
