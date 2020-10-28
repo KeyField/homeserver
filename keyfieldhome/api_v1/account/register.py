@@ -42,8 +42,8 @@ def account_register():
 
     previous_keys = payload['previous_keys']
     clientverify_urlstr = vkey.encode(URLSafeBase64Encoder).decode()
-    main_key_ts = next(k for k,v in previous_keys.items() if v['verify'] == clientverify_urlstr)
-    previous_key_times = [k for k,v in previous_keys.items()]
+    main_key_ts = next(int(k) for k,v in previous_keys.items() if v['verify'] == clientverify_urlstr)
+    previous_key_times = [int(k) for k,v in previous_keys.items()]
     if (max(previous_key_times) != main_key_ts):
         raise RegistrationInvalid(f"key used for registration must be newest keypair of profile")
     # TODO validate sigchain: to see if a previous key was authorized
