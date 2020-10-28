@@ -8,19 +8,19 @@ volumes:
     driver: local
 
 services:
-  # keyfieldhome:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: keyfield_homeserver
-  #   restart: never
-  #   environment:
-  #     APP_ENV: "dev"
-  #     APP_DEBUG: "True"
-  #   depends_on:
-  #     - mongo
-  #   ports:
-  #     - "127.0.0.1:8008:8008"
+  keyfieldhome:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: keyfield_dev_homeserver
+    restart: never
+    environment:
+      APP_ENV: "dev"
+      APP_DEBUG: "True"
+    depends_on:
+      - mongo
+    ports:
+      - "127.0.0.1:8008:8008"
 
   mongo:
     image: mongo

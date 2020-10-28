@@ -95,4 +95,4 @@ def account_register():
     # TODO maybe we should encrypt to the device instead of the user?
     resp_box = private_keys.get_user_shared_box(new_profile)
     enc_data = resp_box.encrypt(packd)
-    return sign_response(make_msgpack_response(msgpack.dumps(enc_data)))
+    return sign_response(make_msgpack_response(enc_data))
