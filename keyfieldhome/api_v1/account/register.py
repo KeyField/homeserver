@@ -46,13 +46,16 @@ def account_register():
     previous_key_times = [int(k) for k,v in previous_keys.items()]
     if (max(previous_key_times) != main_key_ts):
         raise RegistrationInvalid(f"key used for registration must be newest keypair of profile")
-    # TODO validate sigchain: to see if a previous key was authorized
 
 
     server_user_settings = cfg.get('users')
     if not server_user_settings['public_registration']:
         # TODO: check if public key has been invited / authorized or is in admin_keys
+        # TODO validate sigchain: to see if a previous key was authorized
         return 'unauthorized', 401
+    else:
+        # TODO validate sigchain, still
+        pass
 
     # TODO validate username string
     if payload['username'] in server_user_settings['reserved_names']:
