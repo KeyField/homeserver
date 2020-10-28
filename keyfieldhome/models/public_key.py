@@ -1,7 +1,7 @@
 
 from mongoengine import EmbeddedDocument
 from mongoengine.fields import *
-import bson
+from nacl.public import PublicKey
 from nacl.signing import VerifyKey
 
 
@@ -13,8 +13,8 @@ class PublicKeyPair(EmbeddedDocument):
     """
     verifykey_bytes = BinaryField(required=True)
     publickey_bytes = BinaryField(required=False) # able to be discovered by federation
-    created = DateTimeField()
-    expires = DateTimeField()
+    created = IntField() # epoch seconds
+    expires = IntField() # epoch seconds, NotImplemented / TODO
     # TODO: is successor needed as an EmbeddedDocument ?
     # successor = LazyReferenceField('PublicKeyPair', passthrough=True)
 

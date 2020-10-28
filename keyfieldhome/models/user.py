@@ -17,19 +17,22 @@ class UserProfile(Document):
     meta = {
         "allow_inheritance": True,
     }
-    username = StringField(max_length=32, min_length=2, unique=True)
+    # username not unique across entire federation
+    username = StringField(max_length=32, min_length=2)
     homeserver = LazyReferenceField(Homeserver, required=True)
     devices = ListField(LazyReferenceField(UserDevice))
     current_mainkey = EmbeddedDocumentField(PublicKeyPair, required=True, unique=True)
     # latest_sigtime = DateTimeField()
     # latest_signed_id_block
 
-    # signed (by user) msgpack'd user identity (profile block)
-    signed_identity = BinaryField(required=True)
-
+    # msgpack'd user identity (profile/identity block)
+    identity_block_signed = BinaryField(required=True)
 
 class HomeserverUser(UserProfile):
     """Represents a user authorized to use this homeserver.
     """
+    # username unique for authorized users
+    username = StringField(max_length=32, min_length=2, unique=True)
     channels = ListField(LazyReferenceField('ChatChannel', passthrough=True))
+    registered = IntField(required=True)
     blocked_users = ListField(LazyReferenceField(UserProfile, passthrough=True))

@@ -2,9 +2,10 @@
 from mongoengine import Document
 from mongoengine.fields import *
 import nacl
-from nacl.public import PrivateKey, Box, SealedBox
+from nacl.public import PrivateKey, PublicKey, Box, SealedBox
 from nacl.signing import SigningKey, VerifyKey
 
+from ..models.user import UserProfile
 from .. import log
 from .. import config as cfg
 
@@ -37,6 +38,10 @@ def get_server_publickey(encoder=None):
         return PublicKey(_get_server_privatekey().public_key.encode())
     else:
         return _get_server_privatekey().public_key.encode(encoder)
+
+def get_user_shared_box(user: UserProfile):
+    n_box = Box(_get_server_privatekey(), user.current_mainkey.publickey)
+    return n_box
 
 def get_server_sealedbox():
     """Box for decrypting."""

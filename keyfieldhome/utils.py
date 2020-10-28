@@ -1,4 +1,6 @@
 
+import time
+from datetime import datetime, timezone
 from flask import Response, make_response, Request, request
 import nacl
 import base64
@@ -18,9 +20,18 @@ class DotDict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
+def get_timestamp_seconds():
+    ts = time.time()
+    return int(ts)
+
+def timestamp_to_datetime(ts):
+    x = datetime.fromtimestamp(ts, tz=timezone.utc)
+    return x
+
 def set_keyfield_http_headers(r: Response):
-    r.headers['KF-Homeserver-Name'] = cfg.get('name')
-    r.headers['KF-Homeserver-SigKey'] = private_keys.get_server_verifykey(nacl.encoding.URLSafeBase64Encoder)
+    r.headers['KF-Homeserver-Name'] = cfg.get('server')['name']
+    r.headers['KF-Homeserver-Verify'] = private_keys.get_server_verifykey(nacl.encoding.URLSafeBase64Encoder)
+    r.headers['KF-Homeserver-Public'] = private_keys.get_server_publickey(nacl.encoding.URLSafeBase64Encoder)
     return r
 
 def sign_response(r: Response):

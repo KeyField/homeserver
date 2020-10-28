@@ -2,7 +2,7 @@
 [server]
 name = "KeyField Test Homeserver"
 external_addresses = [
-  "http://localhost:8008"
+  "http://localhost:5000"
 ]
 listen_port = 8008
 username = "system"
@@ -11,9 +11,8 @@ username = "system"
 public_registration = true
 admin_keys = {}
 reserved_names = [
-  "admin",
-  "administrator",
-  "owner",
+  "admin", "administrator", "owner",
+  "system", "server", "homeserver",
 ]
 
 [db]
