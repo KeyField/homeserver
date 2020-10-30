@@ -1,7 +1,9 @@
 
 from mongoengine import Document
 from mongoengine.fields import *
+from nacl.encoding import URLSafeBase64Encoder
 
+from ..utils import get_timestamp_seconds
 from .public_key import PublicKeyPair
 
 class Homeserver(Document):
@@ -27,3 +29,17 @@ class Homeserver(Document):
         if self.server_key.publickey_bytes is None:
             self.pull_federation_identity()
         return self.server_key.publickey
+
+    @property
+    def verifykey(self):
+        return self.server_key.verifykey
+
+    @property
+    def identityblock_homeserver(self):
+        """The homeserver section of the identity block."""
+        return {
+            "address": self.address,
+            "verify": self.verifykey.encode(URLSafeBase64Encoder).decode(),
+            "public": self.publickey.encode(URLSafeBase64Encoder).decode(),
+            # "timestamp": get_timestamp_seconds(),
+        }

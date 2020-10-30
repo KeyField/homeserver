@@ -1,15 +1,36 @@
 
-from nacl.encoding import RawEncoder
+from nacl.encoding import RawEncoder, URLSafeBase64Encoder
+import msgpack
 
 from . import config as cfg
 from . import log
 from .enclave import private_keys
 from .models.public_key import PublicKeyPair
 from .models.homeserver import Homeserver
+from .models.user import UserProfile, HomeserverUser
 
 def on_startup():
     hs_l = ensure_homeserver()
-    up = ensure_profile()
+
+def build_own_profile_block_bytes():
+    """The signed identity block for the server"""
+    serverconfig = cfg.get('server')
+    hs = Homeserver.objects.get(address=serverconfig['external_addresses'][0])
+    pb = {
+        "username": serverconfig["username"],
+        "homeserver": hs.identityblock_homeserver,
+        "keys": {
+            "verify": private_keys.get_server_verifykey(URLSafeBase64Encoder).decode(),
+            "public": private_keys.get_server_publickey(URLSafeBase64Encoder).decode(),
+        },
+        "previous_keys": {
+            "0": { # server keys are permanent
+                "verify": private_keys.get_server_verifykey(URLSafeBase64Encoder).decode(),
+                "public": private_keys.get_server_publickey(URLSafeBase64Encoder).decode(),
+            }
+        },
+    }
+    return private_keys.sign_with_server_key(msgpack.packb(pb))
 
 def ensure_homeserver():
     hs_l = []
@@ -42,6 +63,16 @@ def ensure_homeserver():
             )
             hs.save()
             hs_l.append(hs)
-
-def ensure_profile():
-    pass
+    # the UserProfile for this server
+    try:
+        hs_up = UserProfile.objects.get(current_mainkey=pkp)
+    except UserProfile.DoesNotExist:
+        log.warn(f"Creating UserProfile for homeserver...")
+        hs_up = UserProfile(
+            username=serverconfig["username"],
+            current_mainkey=pkp,
+            homeserver=Homeserver.objects.get(address=serverconfig["external_addresses"][0]),
+            devices=[],
+            identity_block_signed=build_own_profile_block_bytes(),
+        )
+        hs_up.save()

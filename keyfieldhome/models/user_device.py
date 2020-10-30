@@ -13,6 +13,10 @@ class UserDevice(Document):
     owner = LazyReferenceField('UserProfile', passthrough=True, required=True)
     publickey_bytes = BinaryField(required=True)
 
+    @property
+    def publickey(self):
+        return PublicKey(self.publickey_bytes)
+
     def encrypt_to(content: bytes):
         """Encrypt content from the server to this device."""
         pass
