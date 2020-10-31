@@ -22,6 +22,14 @@ port = 27017
 database_name = "keyfield_dev"
 
 [federation]
+# option to globally disable communication with other homeservers
+federate = true
+# useful for running a completely private homeserver:
+# requires users to be registered to pull identity blocks
+public_profiles = true
+# verifykeys of homeservers to block all federation with:
 blocked_peers_keys = []
+# addresses which will not be federated to, regardless of keys
 blocked_peers_addresses = []
-# auto_update_profiles = true
+# attempt to update profiles from their own homeserver when they are retrieved
+auto_update_nonlocal_profiles = true

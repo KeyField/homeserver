@@ -10,9 +10,18 @@ from .bp import bp
 
 @bp.route('/profile/<keyid>')
 def get_profile(keyid):
-    """Unauthenticated route, information is public, so no encryption."""
-    verifykey_bytes = bytes_from_urlstr(keyid)
+    """Lookup a user identity block by key ID."""
+    fedconfig = cfg.get("federation")
 
+    if fedconfig['public_profiles'] is False:
+        # only users of this homeserver are allowed to retrieve identities
+        pass # TODO
+
+    if fedconfig['auto_update_nonlocal_profiles']:
+        # attempt to pull newer information from that profile's homeserver first
+        pass # TODO
+
+    verifykey_bytes = bytes_from_urlstr(keyid)
     try:
         userprofile = UserProfile.objects.get(current_mainkey__verifykey_bytes=verifykey_bytes)
     except UserProfile.DoesNotExist as e:

@@ -76,3 +76,4 @@ def ensure_homeserver():
             identity_block_signed=build_own_profile_block_bytes(),
         )
         hs_up.save()
+    return hs_l

@@ -25,7 +25,7 @@ class UserProfile(Document):
     # latest_sigtime = DateTimeField()
     # latest_signed_id_block
 
-    # msgpack'd user identity (profile/identity block)
+    # msgpack'd and signed user identity (profile/identity block)
     identity_block_signed = BinaryField(required=True)
 
 class HomeserverUser(UserProfile):

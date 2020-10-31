@@ -14,6 +14,8 @@ class Homeserver(Document):
     # we can discover the encryption key and name on-demand if we don't yet have it
     name = StringField()
     server_username = StringField()
+    # counter for failure to federate with, bad signature, request denied, etc...
+    failcount = IntField()
 
     def pull_federation_identity(self):
         """Updates the other homeserver's details."""
